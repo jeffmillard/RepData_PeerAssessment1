@@ -288,21 +288,13 @@ Looks like our subject works out everyday but Sunday?  Looking at this, I chose 
 
 ### 4.3 New data set with imputed values
 
+The steps to making the new data set with imputed values:
 
 * clone original, excluding dates that have no data
 * create 2nd set consisting of random sample of 8 days
 * generate a list of the NA dates to replace
 * generate a list of non-NA dates
 * for each of the 8 newly sampled dates, replace date values with the orginal NA dates
-
-
-The steps to making the new data set with imputed values:
-
-* clone the original data set
-* generate a list of the NA dates to replace
-* generate a list of non-NA dates
-* 
-
 
 
 ```r
@@ -359,7 +351,8 @@ hist(daysum2.DF$value, col="blue", xlab="Steps per day", breaks=20,
 ```
 
 ![plot of chunk histogram_imputed](figure/histogram_imputed.png) 
-Compared to original
+
+#### Compared to original
 
 
 ```r
@@ -442,10 +435,11 @@ timemean2.DF <- melt(tapply(imputed.DF$steps,
 				   INDEX=list(imputed.DF$interval,imputed.DF$typeofday), 
 				   FUN=mean, na.rm=TRUE))
 
-# compare days; since this is just a quick exploration, I am not bothering to
-# reorder plots to follow order of days of week
+# lattice plot to compare weekends and weekdays
 xyplot(value ~ Var1 | Var2, data=timemean2.DF, layout=c(1,2), pch=NA, type="l",
 	 ylab="Number of Steps", xlab="Interval")
 ```
 
 ![plot of chunk lattice_compare_weekdays_and_weekends](figure/lattice_compare_weekdays_and_weekends.png) 
+
+### Finished!
