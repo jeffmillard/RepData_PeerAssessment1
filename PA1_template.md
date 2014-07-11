@@ -451,7 +451,7 @@ xyplot(value ~ Var1 | Var2, data=timemean2.DF, layout=c(1,2), pch=NA, type="l",
 
 ![plot of chunk lattice_compare_weekdays_and_weekends](./PA1_template_files/figure-html/lattice_compare_weekdays_and_weekends.png) 
 
-Thus, it seems that the test subject sleeps in on the weekends, but has a generally higher level of activity throughout the day.
+Thus, it seems that the test subject sleeps in a little later on the weekends, but has a generally higher level of activity throughout the day.
 
 
 ### Finished!
