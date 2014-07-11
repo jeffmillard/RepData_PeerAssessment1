@@ -1,7 +1,6 @@
 ---
 output:
-  html_document:
-    keep_md: yes
+  html_document
 ---
 # Reproducible Research: Peer Assessment 1
 *by Jeffrey R. Millard, PhD*
