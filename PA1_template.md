@@ -22,7 +22,7 @@ are left alone. There are no NA values for date and interval.
 # with resulting file "activity.csv".  No other preprocessing has 
 # been performed at this point.
 
-# make sure we are in the correct directory
+# make sure we are in the correct directory (this is specific to my computer)
 setwd("~/RepData_PeerAssessment1")
 
 # load data into data.frame DF, do not touch NA values yet
@@ -56,7 +56,7 @@ Thus far, the only transformation is setting dates as factors. There are a few m
 
 ## 2. What is mean total number of steps taken per day?
 
-The mean per **interval** is actually found in the summary(DF) output above, but that is not the mean per **day**.  To get that, we need to calculate the total number of steps per day for each day, and then comnpute the mean for those 61 days.
+The mean per **interval** is actually found in the summary(DF) output above, but that is not the mean per **day**.  To get that, we need to calculate the total number of steps per day for each day, and then compute the mean for those 61 days.
 
 ### 2.1 Histogram of total steps per day
 
@@ -83,7 +83,9 @@ hist(daysum.DF$value, col="red", xlab="Steps per day", breaks=20,
 	main="Histogram of Total Number of Steps Per Day")
 ```
 
-![plot of chunk histogram_steps_per_day](figure/histogram_steps_per_day.png) 
+![plot of chunk histogram_steps_per_day](./PA1_template_files/figure-html/histogram_steps_per_day.png) 
+
+Worth noting that there are 10 days with less than 1000 steps per day.  
 
 ### 2.2 Mean and median steps per day
 
@@ -150,9 +152,9 @@ A time series plot of the activity:
 plot(timemean.DF$Var1, timemean.DF$value, type="l", xlab="5-Minute Time Interval Number", ylab="Mean Number of Steps", main="Average Number of Steps by 5-Minute Interval")
 ```
 
-![plot of chunk plot_steps_per_interval](figure/plot_steps_per_interval.png) 
+![plot of chunk plot_steps_per_interval](./PA1_template_files/figure-html/plot_steps_per_interval.png) 
 
-In case you haven't noticed, the interval labels are hour+minute, so 505 is actually 5:05am.  Therefore, there is a gap after each interval ending in 55, and the last interval is 2355, even though there are 1440 minutes in a day.
+Note that the interval labels are hour+minute, so 505 is actually 5:05am.  Therefore, there is a gap after each interval ending in 55, and the last interval is 2355, even though there are 1440 minutes in a day.
 
 Thus, the subject generally gets up at around 5:30am, exercises (or does some vigorous activity) from 8:00am to 9:00am, and goes to bed around 10:30pm.  There are other, smaller activity peaks from 3:30pm-4:20pm and 6:15-7:15pm.
 
@@ -217,7 +219,7 @@ nacount.DF <- melt(tapply(DF$nacount, INDEX=DF$interval, FUN=sum, na.rm=TRUE))
 plot(nacount.DF$Var1, nacount.DF$value, type="l", xlab="5-Minute Time Interval Number", ylab="Number of NA values", main="NA Values by 5-Minute Interval")
 ```
 
-![plot of chunk NA_by_interval](figure/NA_by_interval.png) 
+![plot of chunk NA_by_interval](./PA1_template_files/figure-html/NA_by_interval.png) 
 
 
 ```r
@@ -225,7 +227,7 @@ nacount.DF <- melt(tapply(DF$nacount, INDEX=DF$date, FUN=sum, na.rm=TRUE))
 plot(nacount.DF$Var1, nacount.DF$value, type="l", xlab="Date", ylab="Number of NA values", main="NA Values by Date")
 ```
 
-![plot of chunk NA_by_date](figure/NA_by_date.png) 
+![plot of chunk NA_by_date](./PA1_template_files/figure-html/NA_by_date.png) 
 
 Since it doesn't matter which interval we choose, we can find out the dates that are missing by checking any interval for NA values.
 
@@ -250,7 +252,7 @@ No obvious bias toward particular days of the week missing.
 
 It seems unlikely the data recording stopped and started almost magically at midnight, so I assume that the person who recorded the data removed data for particular days, for reasons unknown.  
 
-Therefore, **the strategy should address how to replace entire missing days**. We can do this either by selecting entire days, or selecting intervals.  I favor selecting days, because selecting (random) intervals could result in construction of days with meaningless activity patterns - suddenly going from running to inactivity and back again, for example.
+Therefore, **the strategy for replacing NA values should address how to replace entire missing days**. We can do this either by selecting entire days, or selecting intervals.  I favor selecting days, because selecting (random) intervals could result in construction of days with meaningless activity patterns - suddenly going from running to inactivity and back again, for example.
 
 Possible strategies considered included:
 
@@ -282,7 +284,7 @@ timemean.DF <- melt(tapply(DF$steps, INDEX=list(DF$interval,DF$weekday), FUN=mea
 xyplot(value ~ Var1 | Var2, data=timemean.DF, layout=c(1,7), pch=NA, type="l")
 ```
 
-![plot of chunk activity_by_day_of_week](figure/activity_by_day_of_week.png) 
+![plot of chunk activity_by_day_of_week](./PA1_template_files/figure-html/activity_by_day_of_week.png) 
 
 Looks like our subject works out everyday but Sunday?  Looking at this, I chose strategy #2, taking a random sample from all not-NA days, since it was hard to argue that there was enough pronounced variation in the days.
 
@@ -310,7 +312,7 @@ cleaned.DF <- droplevels(cleaned.DF)
 # randomly pick 8 days from cleaned.DF to duplicate
 # 	sample(levels(cleaned.DF$date), 8) picks the 8 days
 #	%in% is used to pick everything matching those 8 days
-set.seed(17)
+set.seed(14)
 newdaylist <- as.character(sample(levels(cleaned.DF$date), 8))
 extradays.DF <- cleaned.DF[cleaned.DF$date %in% newdaylist,]
 
@@ -329,19 +331,20 @@ summary(imputed.DF)
 ```
 
 ```
-##      steps             date          interval      weekday         
-##  Min.   :  0   2012-10-02:  288   Min.   :   0   Length:17568      
-##  1st Qu.:  0   2012-10-03:  288   1st Qu.: 589   Class :character  
-##  Median :  0   2012-10-04:  288   Median :1178   Mode  :character  
-##  Mean   : 37   2012-10-05:  288   Mean   :1178                     
-##  3rd Qu.: 12   2012-10-06:  288   3rd Qu.:1766                     
-##  Max.   :806   2012-10-07:  288   Max.   :2355                     
-##                (Other)   :15840
+##      steps               date          interval      weekday         
+##  Min.   :  0.0   2012-10-02:  288   Min.   :   0   Length:17568      
+##  1st Qu.:  0.0   2012-10-03:  288   1st Qu.: 589   Class :character  
+##  Median :  0.0   2012-10-04:  288   Median :1178   Mode  :character  
+##  Mean   : 37.7   2012-10-05:  288   Mean   :1178                     
+##  3rd Qu.: 13.0   2012-10-06:  288   3rd Qu.:1766                     
+##  Max.   :806.0   2012-10-07:  288   Max.   :2355                     
+##                  (Other)   :15840
 ```
 
 ### 4.4 Histogram, mean and median of new data set
 
 #### Histogram
+
 
 ```r
 daysum2.DF <- melt(tapply(imputed.DF$steps, INDEX=imputed.DF$date, FUN=sum, na.rm=TRUE))
@@ -350,7 +353,7 @@ hist(daysum2.DF$value, col="blue", xlab="Steps per day", breaks=20,
 	main="Histogram of Total Number of Steps Per Day")
 ```
 
-![plot of chunk histogram_imputed](figure/histogram_imputed.png) 
+![plot of chunk histogram_imputed](./PA1_template_files/figure-html/histogram_imputed.png) 
 
 #### Compared to original
 
@@ -360,8 +363,9 @@ hist(daysum.DF$value, col="red", xlab="Steps per day", breaks=20,
 	main="Histogram of Total Number of Steps Per Day")
 ```
 
-![plot of chunk histogram_original](figure/histogram_original.png) 
-#### Mean and median 
+![plot of chunk histogram_original](./PA1_template_files/figure-html/histogram_original.png) 
+
+#### Mean and median
 
 
 ```r
@@ -371,9 +375,9 @@ summary(daysum2.DF)
 ```
 ##          Var1        value      
 ##  2012-10-02: 1   Min.   :   41  
-##  2012-10-03: 1   1st Qu.: 8821  
-##  2012-10-04: 1   Median :10765  
-##  2012-10-05: 1   Mean   :10668  
+##  2012-10-03: 1   1st Qu.: 8918  
+##  2012-10-04: 1   Median :11015  
+##  2012-10-05: 1   Mean   :10851  
 ##  2012-10-06: 1   3rd Qu.:13452  
 ##  2012-10-07: 1   Max.   :21194  
 ##  (Other)   :55
@@ -384,7 +388,7 @@ mean(daysum2.DF$value)
 ```
 
 ```
-## [1] 10668
+## [1] 10851
 ```
 
 ```r
@@ -392,7 +396,7 @@ median(daysum2.DF$value)
 ```
 
 ```
-## [1] 10765
+## [1] 11015
 ```
 
 #### Comparison of imputed and original data sets
@@ -410,22 +414,27 @@ compare.DF
 ```
 ##        Data Set  Mean Median StdDev
 ## 1 Original Data  9354  10395   5406
-## 2  Imputed Data 10668  10765   4382
+## 2  Imputed Data 10851  11015   4139
 ```
 
 There are differences in the mean and median total number of steps, as would be expected by random resampling to add 8 days to the data set.
+
+It is noteworthy that there are 2 days with very low activity counts (41 steps and 126 steps).  Examining these days, there is only 10 minutes of activity each day over the entire 24 hour period.  All other intervals on these days have values of 0 steps.  It could be argued that these 2 days do not represent an actual activity pattern (subject is absolutely immobilized for 23 hours and 50 minutes), and these days should be excluded as well.  However, in keeping with the instructions, only NA values were excluded.
+
+With or without the 2 "immobile" days, since the NA data represent entire missing days, a strong argument could be made that these days should simply be dropped from the data and not imputed.  Again, this would not be in keeping with the analysis instructions, so imputed data were used.
 
 ## 5. Are there differences in activity patterns between weekdays and weekends?
 
 ### 5.1 New factor variable "weekday", "weekend"
 
-I already included a "weekday" column earlier for data exploration, so I will use this to generate a weekday vs weekend comparison.  Per instructions, I used the set with imputed data.
+A "weekday" column was already generated earlier for data exploration, so this will be used to generate a weekday vs weekend comparison.  Per instructions, I used the set with imputed data.
 
 
 
 ```r
 imputed.DF$typeofday <- as.factor(ifelse(imputed.DF$weekday %in% c("Saturday", "Sunday"), "weekend", "weekday"))
 ```
+
 ### 5.2 Time series panel plot comparing weekday and weekend activity
 
 
@@ -440,6 +449,9 @@ xyplot(value ~ Var1 | Var2, data=timemean2.DF, layout=c(1,2), pch=NA, type="l",
 	 ylab="Number of Steps", xlab="Interval")
 ```
 
-![plot of chunk lattice_compare_weekdays_and_weekends](figure/lattice_compare_weekdays_and_weekends.png) 
+![plot of chunk lattice_compare_weekdays_and_weekends](./PA1_template_files/figure-html/lattice_compare_weekdays_and_weekends.png) 
+
+Thus, it seems that the test subject sleeps in on the weekends, but has a generally higher level of activity throughout the day.
+
 
 ### Finished!
